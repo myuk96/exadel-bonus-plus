@@ -4,6 +4,7 @@ using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using ExadelBonusPlus.Services.Models;
+using ExadelBonusPlus.WebApi.Contracts.V1;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -11,7 +12,7 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace ExadelBonusPlus.WebApi.Controllers
 {
-    [Route("[controller]")]
+    [Route(ApiRoutes.Generic)]
     [ApiController]
     [ValidationFilter]
     [ExceptionFilter]
