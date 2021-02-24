@@ -13,7 +13,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 
-namespace ExadelBonusPlus.WebApi
+namespace ExadelBonusPlus.WebApi.Installers
 {
     public static class IServiceCollectionExtensions
     {

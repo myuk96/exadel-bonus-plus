@@ -4,6 +4,11 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using ExadelBonusPlus.Services.Models;
+<<<<<<< HEAD:ExadelBonusPlus.WebApi/Controllers/HistoryController.cs
+=======
+using ExadelBonusPlus.WebApi.Contracts.V1;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+>>>>>>> temp:ExadelBonusPlus.WebApi/Controllers/V1/HistoryController.cs
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -11,7 +16,7 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace ExadelBonusPlus.WebApi.Controllers
 {
-    [Route("api/[controller]")]
+    [Route(ApiRoutes.Generic)]
     [ApiController]
     [Authorize]
     public class HistoryController : ControllerBase

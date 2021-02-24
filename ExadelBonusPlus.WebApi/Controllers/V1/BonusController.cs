@@ -8,11 +8,12 @@ using Swashbuckle.AspNetCore.Annotations;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using ExadelBonusPlus.WebApi.Contracts.V1;
 
 namespace ExadelBonusPlus.WebApi
 {
     [ApiController]
-    [Route("api/[controller]/")]
+    [Route(ApiRoutes.Generic)]
     public class BonusController : ControllerBase
     {
         private readonly ILogger<BonusController> _logger;
