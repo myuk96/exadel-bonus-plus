@@ -13,9 +13,6 @@ namespace ExadelBonusPlus.WebApi.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    [ValidationFilter]
-    [ExceptionFilter]
-    [HttpModelResultFilter]
     [Authorize]
     public class AccountController : ControllerBase
     {
@@ -95,7 +92,9 @@ namespace ExadelBonusPlus.WebApi.Controllers
             var cookieOptions = new CookieOptions
             {
                 HttpOnly = true,
-                Expires = DateTime.UtcNow.AddDays(2)
+                Expires = DateTime.UtcNow.AddDays(2),
+                SameSite =  SameSiteMode.None
+
             };
             Response.Cookies.Append("refreshToken", token, cookieOptions);
         }

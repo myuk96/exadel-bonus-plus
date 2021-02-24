@@ -4,8 +4,10 @@ using ExadelBonusPlus.DataAccess;
 using ExadelBonusPlus.Services;
 using ExadelBonusPlus.Services.Models;
 using ExadelBonusPlus.Services.Models.DTOValidator;
+using ExadelBonusPlus.Services.Models.Interfaces;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,10 +29,13 @@ namespace ExadelBonusPlus.WebApi
 
         }
 
-        public static void AddHistoryTransient(this IServiceCollection services)
+        public static void AddHistoryTransient(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddTransient<IHistoryRepository, HistoryRepository>();
             services.AddTransient<IHistoryService, HistoryService>();
+            services.Configure<EmailSettings>(configuration.GetSection(
+                nameof(EmailSettings)));
+            services.AddScoped<IEmailService, EmailServices>();
         }
 
         public static void AddVendorTransient(this IServiceCollection services)
@@ -58,12 +63,18 @@ namespace ExadelBonusPlus.WebApi
             services.Configure<AppJwtSettings>(configuration.GetSection(
                 nameof(AppJwtSettings)));
 
+            services.ConfigureApplicationCookie(options => {
+                options.Cookie.SameSite = SameSiteMode.None;
+            });
+
+
             services.AddIdentity<ApplicationUser, ApplicationRole>()
                 .AddMongoDbStores<ApplicationUser, ApplicationRole, Guid>(
                     configuration["MongoDbSettings:ConnectionString"],
                     configuration["MongoDbSettings:DatabaseName"])
-                .AddSignInManager()
                 .AddDefaultTokenProviders();
+
+
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("DefaultPolicy", policy =>
@@ -71,9 +82,15 @@ namespace ExadelBonusPlus.WebApi
                     policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
                     policy.RequireAuthenticatedUser();
                 });
+
             });
-            services.AddAuthentication()
-                .AddCookie(cfg => cfg.SlidingExpiration = true)
+           
+
+            services.AddAuthentication(opt =>
+                {
+                    opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                })
                 .AddJwtBearer(cfg =>
                 {
                     cfg.RequireHttpsMetadata = false;

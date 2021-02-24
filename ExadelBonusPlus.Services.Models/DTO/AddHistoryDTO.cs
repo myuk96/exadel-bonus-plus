@@ -8,7 +8,5 @@ namespace ExadelBonusPlus.Services.Models
     {
         public Guid UserId { get; set; }
         public Guid BonusId { get; set; }
-        public DateTime DateUse { get; set; }
-        public int Rating { get; set; }
     }
 }

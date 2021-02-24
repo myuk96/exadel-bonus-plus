@@ -14,7 +14,7 @@ namespace ExadelBonusPlus.DataAccess
     {
         private readonly MongoDbSettings _mongoDbSettings;
         private readonly MongoClient _mongoClient;
-        private readonly IMongoDatabase _database;
+        protected readonly IMongoDatabase _database;
 
         protected private BaseRepository(IOptions<MongoDbSettings> mongoDbSettings)
         {

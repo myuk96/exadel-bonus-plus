@@ -10,6 +10,7 @@ using ExadelBonusPlus.Services.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
@@ -49,10 +50,10 @@ namespace ExadelBonusPlus.Services.Tests
         {
             CreateDefaultApplicationUserServiceInstance();
             var id = _fakeUsers[0].Id;
-            var history = await _userService.GetUserAsync(id.ToString());
+            var user = await _userService.GetUserAsync(id.ToString());
 
-            Assert.NotNull(history);
-            return history;
+            Assert.NotNull(user);
+            return user;
         }
         [Fact]
         public async Task<UserInfoDTO> UserInfoDTO_RestoreUserAsync_Return_UserInfoDTO()
@@ -122,7 +123,7 @@ namespace ExadelBonusPlus.Services.Tests
         public async Task<AuthResponce> String_RefreshToken_Return_AuthResponce()
         {
             CreateDefaultApplicationUserServiceInstance();
-            var authResponce = await _userService.RefreshToken(RandomString(10), RandomString(9));
+            var authResponce = await _userService.RefreshToken(RandomString(10), _fakeTokens[0].CreatedByIp);
 
             Assert.NotNull(authResponce);
             return authResponce;
@@ -155,13 +156,50 @@ namespace ExadelBonusPlus.Services.Tests
                 new Mock<ILogger<SignInManager<TIDentityUser>>>().Object,
                 new Mock<IAuthenticationSchemeProvider>().Object,
                 new Mock<IUserConfirmation<TIDentityUser>>().Object
-               );
+            );
 
         }
         private void CreateDefaultApplicationUserServiceInstance()
         {
+            var services = new ServiceCollection();
+
+            var mockStore = new Mock<IUserStore<ApplicationUser>>();
+            var mockOptionsAccessor = new Mock<IOptions<IdentityOptions>>();
+            var mockPasswordHasher = new Mock<IPasswordHasher<ApplicationUser>>();
+            var userValidators = new List<IUserValidator<ApplicationUser>>();
+            var validators = new List<IPasswordValidator<ApplicationUser>>();
+            var mockKeyNormalizer = new Mock<ILookupNormalizer>();
+            var mockErrors = new Mock<IdentityErrorDescriber>();
+            var mockServices = new Mock<IServiceProvider>();
+            var mockLogger = new Mock<ILogger<UserManager<ApplicationUser>>>();
+
+            var userManager = new UserManager<ApplicationUser>(mockStore.Object,
+                mockOptionsAccessor.Object,
+                mockPasswordHasher.Object,
+                userValidators,
+                validators,
+                mockKeyNormalizer.Object,
+                mockErrors.Object,
+                mockServices.Object,
+                mockLogger.Object);
+
+            var userResolver = new UserResolver(userManager, _mapper);
+
+            var bonusResolver = new BonusResolver(new Mock<IVendorService>().Object, new Mock<IBonusService>().Object, _mapper);
+
+            services.AddTransient(sp => userManager);
+            services.AddTransient(sp => userResolver);
+            services.AddTransient(sp => bonusResolver);
+
+            IServiceProvider serviceProvider = services.BuildServiceProvider();
+
             var myProfile = new MapperProfile();
-            var configuration = new MapperConfiguration(cfg => cfg.AddProfile(myProfile));
+            var configuration = new MapperConfiguration(cfg =>
+            {
+                cfg.AddProfile(myProfile);
+                cfg.ConstructServicesUsing(serviceProvider.GetService);
+            });
+
             _mapper = new Mapper(configuration);
             _random = new Random();
             GenerateData();
@@ -192,7 +230,7 @@ namespace ExadelBonusPlus.Services.Tests
 
 
             _tokenServiceMock = new Mock<ITokenRefreshService>();
-            _tokenServiceMock.Setup(s => s.GenerateRefreshToken(RandomString(10), It.IsAny<Guid>())).ReturnsAsync(_fakeTokens[0]);
+            _tokenServiceMock.Setup(s => s.GenerateRefreshToken(It.IsAny<String>(), It.IsAny<Guid>())).ReturnsAsync(_fakeTokens[0]);
             _tokenServiceMock.Setup(s => s.GetRefreshTokenByToken(It.IsAny<String>())).ReturnsAsync(_fakeTokens);
             _tokenServiceMock.Setup(s => s.UpdateRefreshToken(It.IsAny<String>(), It.IsAny<TokenRefresh>())).ReturnsAsync(_fakeTokens[0]);
             

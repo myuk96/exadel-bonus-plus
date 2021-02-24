@@ -16,8 +16,6 @@ namespace ExadelBonusPlus.WebApi.Controllers
     public class VendorController : ControllerBase
     {
         private IVendorService _vendorService;
-        private readonly IMapper _mapper;
-
         public VendorController(IVendorService vendorService, IMapper mapper)
         {
             _vendorService = vendorService;

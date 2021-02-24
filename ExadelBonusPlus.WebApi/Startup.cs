@@ -26,8 +26,17 @@ namespace ExadelBonusPlus.WebApi
             services.Configure<MongoDbSettings>(_configuration.GetSection(
                 nameof(MongoDbSettings)));
 
-            services.AddCors();
-            
+            services.AddCors(setup =>
+            {
+                setup.AddDefaultPolicy(policy =>
+                {
+                    policy.AllowAnyHeader();
+                    policy.AllowAnyMethod();
+                    policy.SetIsOriginAllowed(origin => true);
+                    policy.AllowCredentials();
+                });
+            });
+
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             
             services.AddControllers(options =>
@@ -87,7 +96,7 @@ namespace ExadelBonusPlus.WebApi
                 });
             });
             services.AddBonusTransient();
-            services.AddHistoryTransient();
+            services.AddHistoryTransient(_configuration);
             services.AddApiIdentityConfiguration(configuration: _configuration);
             services.AddVendorTransient();
         }
@@ -101,6 +110,7 @@ namespace ExadelBonusPlus.WebApi
                 };
                 app.UseDeveloperExceptionPage(developerExceptionPageOptions);
             }
+            app.UseCors();
             app.UseStaticFiles();
 
             app.UseSwagger();
@@ -117,9 +127,7 @@ namespace ExadelBonusPlus.WebApi
             
             app.UseAuthentication();
             app.UseAuthorization();
-            app.UseCors(builder => builder.AllowAnyOrigin()
-                                          .AllowAnyMethod()
-                                          .AllowAnyHeader());
+            
 
 
             app.UseEndpoints(endpoints =>
@@ -129,9 +137,7 @@ namespace ExadelBonusPlus.WebApi
                     context.Response.Redirect("/swagger/");
                     return Task.CompletedTask;
                 });
-
                 endpoints.MapControllers();
-
             });
         }
     }
