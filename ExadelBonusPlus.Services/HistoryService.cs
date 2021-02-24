@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using ExadelBonusPlus.Services.Models;
+using ExadelBonusPlus.Services.Models.Interfaces;
 using ExadelBonusPlus.Services.Properties;
 
 namespace ExadelBonusPlus.Services
@@ -12,13 +13,16 @@ namespace ExadelBonusPlus.Services
     {
         private readonly IHistoryRepository _historyRepository;
         private readonly IBonusRepository _bonusRepository;
+        private readonly IEmailService _emailService;
         private readonly IMapper _mapper;
         public HistoryService(IHistoryRepository historyRepository,
                             IBonusRepository bonusRepository,
+                            IEmailService emailService,
                             IMapper mapper)
         {
             _historyRepository = historyRepository;
             _bonusRepository = bonusRepository;
+            _emailService = emailService;
             _mapper = mapper;
 
         }
@@ -28,10 +32,11 @@ namespace ExadelBonusPlus.Services
             {
                 throw new ArgumentNullException("", Resources.ModelIsNull);
             }
-            if (model.Rating == 0)
-                model.Rating = -1;
             var history = _mapper.Map<History>(model);
+            history.Rating = -1;
+            history.CreatedDate = DateTime.UtcNow;
              await _historyRepository.AddAsync(history, cancellationToken);
+             _emailService.SendEmailAsync(history);
             return _mapper.Map<HistoryDto>(history);
         }
 
@@ -68,7 +73,6 @@ namespace ExadelBonusPlus.Services
             var history = await  _historyRepository.GetByIdAsync(id,cancellationToken);
             return !(history is null) ? _mapper.Map<HistoryDto>(history) : throw new ArgumentNullException("", Resources.FindbyIdError);
         }
-        
         
         public async Task<IEnumerable<UserHistoryDto>> GetUserHistoryByUsageDate(Guid userId, DateTime usageDateStart, DateTime usegeDateEnd,  CancellationToken cancellationToken = default)
         {

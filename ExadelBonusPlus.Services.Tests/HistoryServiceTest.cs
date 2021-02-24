@@ -5,7 +5,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using ExadelBonusPlus.Services.Models;
+using ExadelBonusPlus.Services.Models.Interfaces;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Moq;
 using SampleDataGenerator;
 using Xunit;
@@ -26,9 +30,12 @@ namespace ExadelBonusPlus.Services.Tests
         private IBonusRepository _mockBonusRepository;
 
 
+        private Mock<IEmailService> _emailService;
+        private IEmailService _mockEmailService;
+
         public HistoryServiceTest()
         {
-            
+
         }
         [Fact]
         public async Task<List<HistoryDto>> History_FindAllHistoryAsync_Return_ListHistoryDTO()
@@ -51,12 +58,11 @@ namespace ExadelBonusPlus.Services.Tests
             Assert.NotNull(history);
             return history;
         }
-
         [Fact]
         public async Task<HistoryDto> History_DeleteHistoryAsync_Return_HistoryDTO()
         {
             CreateDefaultHistoryServiceInstance();
-            
+
             var idHistory = _fakeHistoryDtos[0].Id;
             var historyDto = await _historyService.DeleteHistory(idHistory, default(CancellationToken));
 
@@ -118,24 +124,57 @@ namespace ExadelBonusPlus.Services.Tests
             return (List<UserHistoryDto>)history;
         }
         
-        
         [Fact]
-        public async Task<HistoryDto> HistoryId_GetUserHistoryByUsageDateAsync_Return_HistoryDto()
+        public async Task<UserHistoryDto> HistoryId_GetUserHistoryByUsageDateAsync_Return_UserHistoryDto()
         {
             CreateDefaultHistoryServiceInstance();
             var Id = _fakeHistoryDtos[0].Id;
-            var history = await _historyService.EstimateBonus(Id, 5,  default(CancellationToken));
+            var history = await _historyService.EstimateBonus(Id, 5, default(CancellationToken));
 
             Assert.NotNull(history);
-            return _mapper.Map<HistoryDto>(history);
+            return (history);
         }
-
-
-
         private void CreateDefaultHistoryServiceInstance()
         {
+            var services = new ServiceCollection();
+
+            var mockStore = new Mock<IUserStore<ApplicationUser>>();
+            var mockOptionsAccessor = new Mock<IOptions<IdentityOptions>>();
+            var mockPasswordHasher = new Mock<IPasswordHasher<ApplicationUser>>();
+            var userValidators = new List<IUserValidator<ApplicationUser>>();
+            var validators = new List<IPasswordValidator<ApplicationUser>>();
+            var mockKeyNormalizer = new Mock<ILookupNormalizer>();
+            var mockErrors = new Mock<IdentityErrorDescriber>();
+            var mockServices = new Mock<IServiceProvider>();
+            var mockLogger = new Mock<ILogger<UserManager<ApplicationUser>>>();
+
+            var userManager = new UserManager<ApplicationUser>(mockStore.Object,
+                mockOptionsAccessor.Object,
+                mockPasswordHasher.Object,
+                userValidators,
+                validators,
+                mockKeyNormalizer.Object,
+                mockErrors.Object,
+                mockServices.Object,
+                mockLogger.Object);
+
+            var userResolver = new UserResolver(userManager, _mapper);
+
+            var bonusResolver = new BonusResolver(new Mock<IVendorService>().Object, new Mock<IBonusService>().Object, _mapper);
+
+            services.AddTransient(sp => userManager);
+            services.AddTransient(sp => userResolver);
+            services.AddTransient(sp => bonusResolver);
+
+            IServiceProvider serviceProvider = services.BuildServiceProvider();
+
             var myProfile = new MapperProfile();
-            var configuration = new MapperConfiguration(cfg => cfg.AddProfile(myProfile));
+            var configuration = new MapperConfiguration(cfg =>
+            {
+                cfg.AddProfile(myProfile);
+                cfg.ConstructServicesUsing(serviceProvider.GetService);
+            });
+
             _mapper = new Mapper(configuration);
 
             var historyGenerator = Generator
@@ -146,19 +185,19 @@ namespace ExadelBonusPlus.Services.Tests
                     .ChooseFrom(Guid.NewGuid())
                     .For(x => x.BonusId)
                     .ChooseFrom(Guid.NewGuid())
-                    .For(x=>x.CreatedDate)
+                    .For(x => x.CreatedDate)
                     .ChooseFrom(DateTime.Now);
             _fakeHistoryDtos = historyGenerator.Generate(10).ToList();
 
             _historyRepo = new Mock<IHistoryRepository>();
-            _historyRepo.Setup(s => s.GetAllAsync( default(CancellationToken))).ReturnsAsync(_mapper.Map<List<History>>(_fakeHistoryDtos));
-            _historyRepo.Setup(s => s.GetByIdAsync(It.IsAny<Guid>(), default(CancellationToken))).ReturnsAsync(_mapper.Map<History>(_fakeHistoryDtos[1])); 
-            _historyRepo.Setup(s=>s.AddAsync(It.IsAny<History>(), default(CancellationToken)));
-            _historyRepo.Setup(s=>s.RemoveAsync(It.IsAny<Guid>(), default(CancellationToken))).ReturnsAsync(_mapper.Map<History>(_fakeHistoryDtos[0]));
+            _historyRepo.Setup(s => s.GetAllAsync(default(CancellationToken))).ReturnsAsync(_mapper.Map<List<History>>(_fakeHistoryDtos));
+            _historyRepo.Setup(s => s.GetByIdAsync(It.IsAny<Guid>(), default(CancellationToken))).ReturnsAsync(_mapper.Map<History>(_fakeHistoryDtos[1]));
+            _historyRepo.Setup(s => s.AddAsync(It.IsAny<History>(), default(CancellationToken)));
+            _historyRepo.Setup(s => s.RemoveAsync(It.IsAny<Guid>(), default(CancellationToken))).ReturnsAsync(_mapper.Map<History>(_fakeHistoryDtos[0]));
             _historyRepo.Setup(s => s.GetBonusHistory(It.IsAny<Guid>(), default(CancellationToken))).ReturnsAsync(_mapper.Map<List<History>>(_fakeHistoryDtos));
             _historyRepo.Setup(s => s.GetUserHistory(It.IsAny<Guid>(), default(CancellationToken))).ReturnsAsync(_mapper.Map<List<History>>(_fakeHistoryDtos));
-            _historyRepo.Setup(s=>s.GetBonusHistoryByUsageDate(It.IsAny<Guid>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(), default(CancellationToken))).ReturnsAsync(_mapper.Map<List<History>>(_fakeHistoryDtos));
-            _historyRepo.Setup(s=>s.GetUserHistoryByUsageDate(It.IsAny<Guid>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(), default(CancellationToken))).ReturnsAsync(_mapper.Map<List<History>>(_fakeHistoryDtos));
+            _historyRepo.Setup(s => s.GetBonusHistoryByUsageDate(It.IsAny<Guid>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(), default(CancellationToken))).ReturnsAsync(_mapper.Map<List<History>>(_fakeHistoryDtos));
+            _historyRepo.Setup(s => s.GetUserHistoryByUsageDate(It.IsAny<Guid>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(), default(CancellationToken))).ReturnsAsync(_mapper.Map<List<History>>(_fakeHistoryDtos));
             _historyRepo.Setup(x => x.GetCountHistoryByBonusIdAsync(It.IsAny<Guid>(), default(CancellationToken)))
                 .ReturnsAsync(5);
             _bonusRepo = new Mock<IBonusRepository>();
@@ -169,11 +208,16 @@ namespace ExadelBonusPlus.Services.Tests
                 .ReturnsAsync(new Bonus());
 
 
+            _emailService = new Mock<IEmailService>();
+            _emailService.Setup(s => s.SendEmailAsync(It.IsAny<History>()));
 
 
+
+
+            _mockEmailService = _emailService.Object;
             _mockhistoryRepository = _historyRepo.Object;
             _mockBonusRepository = _bonusRepo.Object;
-            _historyService = new HistoryService(_mockhistoryRepository, _mockBonusRepository, _mapper);
+            _historyService = new HistoryService(_mockhistoryRepository, _mockBonusRepository,_mockEmailService, _mapper);
         }
     }
    

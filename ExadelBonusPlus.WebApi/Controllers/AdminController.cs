@@ -11,9 +11,6 @@ namespace ExadelBonusPlus.WebApi.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    [ValidationFilter]
-    [ExceptionFilter]
-    [HttpModelResultFilter]
     [Authorize]
     public class AdminController : ControllerBase
     {

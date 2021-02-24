@@ -16,8 +16,11 @@
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.1" />
     <PackageReference Include="IdentityModel" Version="5.0.1" />
     <PackageReference Include="JWT" Version="8.0.0" />
+    <PackageReference Include="MailKit" Version="2.10.1" />
     <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
+    <PackageReference Include="Net.Bluewalk.MongoDbEntities" Version="2021.1.8.1" />
+    <PackageReference Include="MimeKit" Version="2.10.1" />
     <PackageReference Include="NetDevPack.Identity" Version="1.2.0" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.8.0" />
   </ItemGroup>

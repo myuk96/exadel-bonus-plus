@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Threading;
 using MongoDB.Driver.Linq;
 using System.Threading.Tasks;
+using MongoDB.Entities;
+using MongoDB.Bson;
 
 namespace ExadelBonusPlus.DataAccess
 {
@@ -16,7 +18,11 @@ namespace ExadelBonusPlus.DataAccess
         }
         public async Task<List<Vendor>> SearchVendorByNameAsync(string name, CancellationToken cancellationToken)
         {
-            return await GetCollection().AsQueryable().Where(v=> v.Name.ToLower().Contains(name.ToLower())).ToListAsync(cancellationToken);
+            var filter = Builders<Vendor>.Filter.Regex(
+                new ExpressionFieldDefinition<Vendor, string>(x => x.Name),
+                new BsonRegularExpression($"^{name}", "i"));
+
+            return await GetCollection().Find(filter).ToListAsync(cancellationToken);
         }
 
     }

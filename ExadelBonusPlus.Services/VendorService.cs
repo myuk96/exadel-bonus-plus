@@ -14,26 +14,15 @@ namespace ExadelBonusPlus.Services
     {
         private IVendorRepository _vendorRepository;
         private readonly IMapper _mapper;
-        private readonly IValidator<VendorDto> _vendorDtoValidator;
-        private readonly IValidator<AddVendorDto> _addVendorDtoValidator;
 
         public VendorService(IVendorRepository vendorRepository, 
-            IMapper mapper, 
-            IValidator<VendorDto> vendorDtoValidator, 
-            IValidator<AddVendorDto> addVendorDtoValidator)
+            IMapper mapper)
         {
             _vendorRepository = vendorRepository;
             _mapper = mapper;
-            _vendorDtoValidator = vendorDtoValidator;
-            _addVendorDtoValidator = addVendorDtoValidator;
         }
         public async Task<VendorDto> AddVendorAsync(AddVendorDto model, CancellationToken cancellationToken)
         {
-           var results = _addVendorDtoValidator.Validate(model);
-            if (!results.IsValid)
-            {
-                throw new ArgumentException("", Resources.ValidationError);
-            }
             var vendor = _mapper.Map<Vendor>(model);
             vendor.SetInitialValues();
             await _vendorRepository.AddAsync(vendor, cancellationToken);
@@ -54,9 +43,11 @@ namespace ExadelBonusPlus.Services
 
         public async Task<IEnumerable<VendorDto>> GetAllVendorsAsync(CancellationToken cancellationToken)
         {
-            var result = await _vendorRepository.GetAllAsync(cancellationToken);
+            var vendors = await _vendorRepository.GetAllAsync(cancellationToken);
 
-            return _mapper.Map<IEnumerable<VendorDto>>(result);
+            var vendorDtos = _mapper.Map<IEnumerable<VendorDto>>(vendors);
+
+            return vendorDtos;
         }
 
         public async Task<VendorDto> GetVendorByIdAsync(Guid id, CancellationToken cancellationToken)
@@ -67,7 +58,6 @@ namespace ExadelBonusPlus.Services
             }
             var result = await _vendorRepository.GetByIdAsync(id, cancellationToken);
             return result is null ? throw new ArgumentException("", Resources.FindbyIdError) : _mapper.Map<VendorDto>(result);
-
         }
 
         public async Task<List<VendorDto>> SearchVendorByNameAsync(string name, CancellationToken cancellationToken)
@@ -78,11 +68,6 @@ namespace ExadelBonusPlus.Services
 
         public async Task<VendorDto> UpdateVendorAsync(Guid id, VendorDto model, CancellationToken cancellationToken)
         {
-            var validationResult = _vendorDtoValidator.Validate(model);
-            if (!validationResult.IsValid)
-            {
-                throw new ArgumentException("", Resources.ValidationError);
-            }
             if(id == Guid.Empty)
             {
                 throw new ArgumentNullException("", Resources.IdentifierIsNull);

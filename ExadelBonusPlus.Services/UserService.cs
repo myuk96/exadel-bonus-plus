@@ -187,8 +187,6 @@ namespace ExadelBonusPlus.Services
         }
         private async Task<string> GetFullJwtAsync(ApplicationUser user)
         {
-
-            DateTime time = new DateTime(1970, 1, 1);
             var roles = await _userManager.GetRolesAsync(user);
             return new JwtBuilder()
                 .WithAlgorithm(new HMACSHA512Algorithm())
@@ -197,7 +195,7 @@ namespace ExadelBonusPlus.Services
                 .AddClaim(JwtClaimTypes.Expiration, DateTimeOffset.UtcNow.AddMinutes(_appJwtSettings.Expiration).ToUnixTimeSeconds())
                 .AddClaim(JwtClaimTypes.Email, user.Email)
                 .AddClaim(JwtClaimTypes.Audience, _appJwtSettings.Audience)
-                .AddClaim(ClaimName.IssuedAt, (DateTime.UtcNow - time).TotalMilliseconds)
+                .AddClaim(ClaimName.IssuedAt, DateTimeOffset.UtcNow.AddMinutes(_appJwtSettings.Expiration).ToUnixTimeSeconds())
                 .AddClaim(JwtClaimTypes.Role, roles)
                 .Encode();
         }
