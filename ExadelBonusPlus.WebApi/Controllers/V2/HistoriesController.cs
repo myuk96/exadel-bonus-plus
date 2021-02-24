@@ -59,7 +59,7 @@ namespace ExadelBonusPlus.WebApi.Controllers.v2
         }
 
         [HttpGet]
-        [Route(("users/{userId:Guid}"))]
+        [Route(("/api/v{version:apiVersion}/users/{userId:Guid}/bonus-usages"))]
         [SwaggerResponse((int)HttpStatusCode.OK, Description = "get user history on period ", Type = typeof(ResultDto<List<UserHistoryDto>>))]
         [SwaggerResponse((int)HttpStatusCode.InternalServerError)]
         public async Task<ActionResult<HistoryDto>> GetUserHistoryByDate([FromRoute] Guid userId, DateTime datestart, DateTime dateEnd)
@@ -68,7 +68,7 @@ namespace ExadelBonusPlus.WebApi.Controllers.v2
             return Ok(result);
         }
         [HttpGet]
-        [Route(("bonuses/{bonusId:Guid}"))]
+        [Route(("/api/v{version:apiVersion}/bonuses/{bonusId:Guid}/bonus-usages"))]
         [SwaggerResponse((int)HttpStatusCode.OK, Description = "Get bonus history on period ", Type = typeof(ResultDto<List<BonusHistoryDto>>))]
         [SwaggerResponse((int)HttpStatusCode.InternalServerError)]
         public async Task<ActionResult<HistoryDto>> GetBonusHistoryByDate([FromRoute] Guid bonusId, DateTime datestart, DateTime dateEnd)
