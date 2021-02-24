@@ -58,10 +58,10 @@ namespace ExadelBonusPlus.WebApi
                     Version = "1.0",
                     Title = "exadel-bonus-plus API 1.0",
                 });
-                c.SwaggerDoc("v23", new OpenApiInfo
+                c.SwaggerDoc("v2", new OpenApiInfo
                 {
-                    Version = "2.3",
-                    Title = "exadel-bonus-plus API 2.3",
+                    Version = "2.0",
+                    Title = "exadel-bonus-plus API 2.0",
                 });
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
@@ -108,7 +108,7 @@ namespace ExadelBonusPlus.WebApi
             app.UseSwaggerUI(options =>
                 {
                     options.SwaggerEndpoint("/swagger/v1/swagger.json", "Exadel Bonus Plus API 1.0");
-                    options.SwaggerEndpoint("/swagger/v23/swagger.json", "Exadel Bonus Plus API 2.3");
+                    options.SwaggerEndpoint("/swagger/v2/swagger.json", "Exadel Bonus Plus API 2.0");
                 }
             );
 
