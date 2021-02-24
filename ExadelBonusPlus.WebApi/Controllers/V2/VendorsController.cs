@@ -21,14 +21,14 @@ namespace ExadelBonusPlus.WebApi.Controllers.v2
         {
             _vendorService = vendorService;
         }
-        [HttpGet]
-        [SwaggerResponse((int)HttpStatusCode.OK, Description = "All Vendors", Type = typeof(ResultDto<List<VendorDto>>))]
-        [SwaggerResponse((int)HttpStatusCode.InternalServerError)]
-        public async Task<ActionResult<ResultDto<IEnumerable<VendorDto>>>> GetVendors(CancellationToken cancellationToken)
-        {
-            var vendors = await _vendorService.GetAllVendorsAsync(cancellationToken);
-            return Ok(vendors);
-        }
+        //[HttpGet]
+        //[SwaggerResponse((int)HttpStatusCode.OK, Description = "All Vendors", Type = typeof(ResultDto<List<VendorDto>>))]
+        //[SwaggerResponse((int)HttpStatusCode.InternalServerError)]
+        //public async Task<ActionResult<ResultDto<IEnumerable<VendorDto>>>> GetVendors(CancellationToken cancellationToken)
+        //{
+        //    var vendors = await _vendorService.GetAllVendorsAsync(cancellationToken);
+        //    return Ok(vendors);
+        //}
         [HttpGet("{id:Guid}")]
         [SwaggerResponse((int)HttpStatusCode.OK, Description = "Vendor by ID", Type = typeof(ResultDto<VendorDto>))]
         [SwaggerResponse((int)HttpStatusCode.InternalServerError)]
@@ -64,10 +64,9 @@ namespace ExadelBonusPlus.WebApi.Controllers.v2
         }
 
         [HttpGet]
-        [Route("{name}")]
         [SwaggerResponse((int)HttpStatusCode.OK, Description = "Vendors Retrieved ", Type = typeof(ResultDto<IEnumerable<VendorDto>>))]
         [SwaggerResponse((int)HttpStatusCode.InternalServerError)]
-        public async Task<ActionResult<ResultDto<IEnumerable<VendorDto>>>> GetVendorByName([FromRoute]string name, CancellationToken cancellationToken)
+        public async Task<ActionResult<ResultDto<IEnumerable<VendorDto>>>> GetVendorByName([FromQuery] string name, CancellationToken cancellationToken)
         {
             return Ok(await _vendorService.SearchVendorByNameAsync(name, cancellationToken));
         }

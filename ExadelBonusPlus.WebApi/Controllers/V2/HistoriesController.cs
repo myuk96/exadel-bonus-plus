@@ -12,16 +12,16 @@ using Swashbuckle.AspNetCore.Annotations;
 namespace ExadelBonusPlus.WebApi.Controllers.v2
 {
     [ApiVersion("2.0")]
-    [Route("api/v{version:apiVersion}/[controller]")]
+    [Route("api/v{version:apiVersion}/bonus-usages")]
     [ApiController]
     [Authorize]
-    public class HistoryController : ControllerBase
+    public class HistoriesController : ControllerBase
     {
         private readonly IHistoryService _historyService;
         private readonly IVendorService _vendorService;
-        private readonly ILogger<HistoryController> _logger;
+        private readonly ILogger<HistoriesController> _logger;
 
-        public HistoryController(ILogger<HistoryController> logger,
+        public HistoriesController(ILogger<HistoriesController> logger,
                                 IVendorService vendorService, 
                                 IHistoryService historyService)
         {
@@ -78,7 +78,7 @@ namespace ExadelBonusPlus.WebApi.Controllers.v2
         }
 
         [HttpPut]
-        [Route(("{historyId:Guid}/estimate"))]
+        [Route(("{historyId:Guid}/estimation"))]
         [SwaggerResponse((int)HttpStatusCode.OK, Description = "Estimate usage bonus", Type = typeof(ResultDto<UserHistoryDto>))]
         [SwaggerResponse((int)HttpStatusCode.InternalServerError)]
         public async Task<ActionResult<HistoryDto>> EstimateBonus([FromRoute] Guid historyId, int estimate)
