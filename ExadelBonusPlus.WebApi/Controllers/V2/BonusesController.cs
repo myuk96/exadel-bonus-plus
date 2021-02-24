@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace ExadelBonusPlus.WebApi.v2
 {
     [ApiController]
+    [ApiVersion("2.0")]
     [Route("api/v{version:apiVersion}/[controller]")]
     public class BonusesController : ControllerBase
     {

@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 namespace ExadelBonusPlus.WebApi.Controllers.v2
 {
     [ApiController]
+    [ApiVersion("2.0")]
     [Route("api/v{version:apiVersion}/[controller]")]
     public class VendorsController : ControllerBase
     {
