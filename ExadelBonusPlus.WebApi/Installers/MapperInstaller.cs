@@ -8,8 +8,6 @@ namespace ExadelBonusPlus.WebApi.Installers
     {
         public void InstallServices(IServiceCollection services, IConfiguration configuration)
         {
-            services.AddCors();
-
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
         }
     }

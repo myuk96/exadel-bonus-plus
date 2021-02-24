@@ -26,4 +26,8 @@
     <ProjectReference Include="..\ExadelBonusPlus.Services\ExadelBonusPlus.Services.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Controllers\" />
+  </ItemGroup>
+
 </Project>

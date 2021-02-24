@@ -8,13 +8,9 @@ namespace ExadelBonusPlus.WebApi.Configurators
     {
         public void ConfigureApp(IApplicationBuilder app, IWebHostEnvironment env, IConfiguration configuration)
         {
-
+            app.UseCors();
             app.UseAuthentication();
             app.UseAuthorization();
-            app.UseCors(builder => builder.AllowAnyOrigin()
-                                          .AllowAnyMethod()
-                                          .AllowAnyHeader());
-
         }
     }
 }

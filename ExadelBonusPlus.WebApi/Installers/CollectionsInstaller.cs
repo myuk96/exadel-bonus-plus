@@ -9,7 +9,7 @@ namespace ExadelBonusPlus.WebApi.Installers
         public void InstallServices(IServiceCollection services, IConfiguration configuration)
         {
             services.AddBonusTransient();
-            services.AddHistoryTransient();
+            services.AddHistoryTransient(configuration);
             services.AddApiIdentityConfiguration(configuration);
             services.AddVendorTransient();
         }

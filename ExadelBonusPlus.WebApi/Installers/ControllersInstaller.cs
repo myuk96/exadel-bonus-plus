@@ -14,6 +14,8 @@ namespace ExadelBonusPlus.WebApi.Installers
                 options.Filters.Add(typeof(ExceptionFilterAttribute));
                 options.Filters.Add(typeof(ValidationFilterAttribute));
                 options.Filters.Add(typeof(HttpModelResultFilterAttribute));
+
+                options.Conventions.Add(new GroupingByVersionConvention());
             })
                 .ConfigureApiBehaviorOptions(options =>
                 {

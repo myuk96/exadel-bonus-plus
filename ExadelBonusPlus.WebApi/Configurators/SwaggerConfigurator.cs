@@ -18,11 +18,12 @@ namespace ExadelBonusPlus.WebApi.Configurators
                 options.RouteTemplate = swaggerOptions.JsonRoute;
             });
 
-            app.UseSwaggerUI(options =>
-            {
-                options.SwaggerEndpoint
-                (swaggerOptions.UiEndpoint, swaggerOptions.Description);
-            });
+            app.UseSwaggerUI(options => 
+                {
+                options.SwaggerEndpoint("/swagger/v1/swagger.json", "Exadel Bonus Plus API 1.0");
+                options.SwaggerEndpoint("/swagger/v2/swagger.json", "Exadel Bonus Plus API 2.0");
+                }
+            );
         }
     }
 }
