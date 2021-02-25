@@ -31,6 +31,7 @@ namespace ExadelBonusPlus.WebApi.Controllers.v2
         }
 
         [HttpPost]
+        [Route(("/api/v{version:apiVersion}/users/{userId:Guid}/bonus-usages"))]
         [SwaggerResponse((int)HttpStatusCode.OK, Description = "Add history", Type = typeof(ResultDto<HistoryDto>))]
         [SwaggerResponse((int)HttpStatusCode.InternalServerError)]
         public async Task<ActionResult<HistoryDto>> AddHistory([FromBody] AddHistoryDTO history)

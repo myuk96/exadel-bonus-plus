@@ -8,12 +8,14 @@ using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ExadelBonusPlus.WebApi.Controllers.v2
 {
     [ApiController]
     [ApiVersion("2.0")]
     [Route("api/v{version:apiVersion}/[controller]")]
+    [Authorize]
     public class VendorsController : ControllerBase
     {
         private IVendorService _vendorService;
