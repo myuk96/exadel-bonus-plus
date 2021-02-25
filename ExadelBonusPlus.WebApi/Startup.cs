@@ -54,6 +54,7 @@ namespace ExadelBonusPlus.WebApi
                 })
                 .AddFluentValidation();
 
+            services.AddRouting(options => options.LowercaseUrls = true);
             services.AddApiVersioning(options => {
                 options.DefaultApiVersion = new ApiVersion(1, 0);
                 options.AssumeDefaultVersionWhenUnspecified = true;
