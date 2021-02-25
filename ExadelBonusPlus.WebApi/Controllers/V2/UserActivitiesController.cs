@@ -12,16 +12,16 @@ using Swashbuckle.AspNetCore.Annotations;
 namespace ExadelBonusPlus.WebApi.Controllers.v2
 {
     [ApiVersion("2.0")]
-    [Route("api/v{version:apiVersion}/bonus-usages")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
     [Authorize]
-    public class HistoriesController : ControllerBase
+    public class UserActivitiesController : ControllerBase
     {
         private readonly IHistoryService _historyService;
         private readonly IVendorService _vendorService;
-        private readonly ILogger<HistoriesController> _logger;
+        private readonly ILogger<UserActivitiesController> _logger;
 
-        public HistoriesController(ILogger<HistoriesController> logger,
+        public UserActivitiesController(ILogger<UserActivitiesController> logger,
                                 IVendorService vendorService, 
                                 IHistoryService historyService)
         {
@@ -31,7 +31,7 @@ namespace ExadelBonusPlus.WebApi.Controllers.v2
         }
 
         [HttpPost]
-        [Route(("/api/v{version:apiVersion}/users/{userId:Guid}/bonus-usages"))]
+        [Route(("/api/v{version:apiVersion}/users/{userId:Guid}/bonuses/{bonusId:Guid}/bonus-usages"))]
         [SwaggerResponse((int)HttpStatusCode.OK, Description = "Add history", Type = typeof(ResultDto<HistoryDto>))]
         [SwaggerResponse((int)HttpStatusCode.InternalServerError)]
         public async Task<ActionResult<HistoryDto>> AddHistory([FromBody] AddHistoryDTO history)
