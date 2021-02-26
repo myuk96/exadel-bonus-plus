@@ -15,13 +15,13 @@ namespace ExadelBonusPlus.WebApi.Controllers.v2
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
     [Authorize]
-    public class UserActivitiesController : ControllerBase
+    public class BonusUsagesController : ControllerBase
     {
         private readonly IHistoryService _historyService;
         private readonly IVendorService _vendorService;
-        private readonly ILogger<UserActivitiesController> _logger;
+        private readonly ILogger<BonusUsagesController> _logger;
 
-        public UserActivitiesController(ILogger<UserActivitiesController> logger,
+        public BonusUsagesController(ILogger<BonusUsagesController> logger,
                                 IVendorService vendorService, 
                                 IHistoryService historyService)
         {
