@@ -33,20 +33,20 @@ namespace ExadelBonusPlus.WebApi.Controllers
             await _userService.RegisterAsync(registerUser);
             return Ok();
         }
-        
+
         [HttpPost]
         [AllowAnonymous]
         [Route("login")]
         [SwaggerResponse((int)HttpStatusCode.OK)]
         [SwaggerResponse((int)HttpStatusCode.InternalServerError)]
         [SwaggerResponse((int)HttpStatusCode.OK, Description = "Get info about authorized user", Type = typeof(ResultDto<UserInfoDTO>))]
-        
+
         public async Task<IActionResult> Login(LoginUserDTO loginUser)
         {
             var ipAddress = Request.HttpContext.Connection.RemoteIpAddress.ToString();
             var result = await _userService.LogInAsync(loginUser, ipAddress);
             setTokenCookie(result.RefreshToken);
-            return Ok(result.AccessToken);
+            return Ok(result);
         }
 
         [HttpPost]
@@ -76,15 +76,24 @@ namespace ExadelBonusPlus.WebApi.Controllers
         [SwaggerResponse((int)HttpStatusCode.OK, Description = "refresh your token", Type = typeof(ResultDto<AuthResponce>))]
         [SwaggerResponse((int)HttpStatusCode.InternalServerError)]
         [AllowAnonymous]
-        public async Task<ActionResult<AuthResponce>> GetRefreshToken()
+        public async Task<ActionResult<AuthResponce>> GetRefreshToken(string refreshToken)
         {
-            var refreshToken = Request.Cookies["refreshToken"];
+            string _refreshToken;
+            if (refreshToken == null)
+            {
+                _refreshToken = Request.Cookies["refreshToken"];
+            }
+            else
+            {
+                _refreshToken = refreshToken;
+
+            }
             var ipAddress = Request.HttpContext.Connection.RemoteIpAddress.ToString();
-            var result = await _userService.RefreshToken(refreshToken, ipAddress);
+            var result = await _userService.RefreshToken(_refreshToken, ipAddress);
             if (result == null)
                 return Unauthorized(new { message = "Invalid token" });
             setTokenCookie(result.RefreshToken);
-            return Ok(result.AccessToken);
+            return Ok(result);
         }
 
         private void setTokenCookie(string token)
@@ -93,11 +102,11 @@ namespace ExadelBonusPlus.WebApi.Controllers
             {
                 HttpOnly = true,
                 Expires = DateTime.UtcNow.AddDays(2),
-                SameSite =  SameSiteMode.None
+                SameSite = SameSiteMode.None
 
             };
             Response.Cookies.Append("refreshToken", token, cookieOptions);
         }
-        
+
     }
 }
