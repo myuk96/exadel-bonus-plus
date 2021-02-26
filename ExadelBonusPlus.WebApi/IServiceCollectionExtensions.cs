@@ -116,8 +116,6 @@ namespace ExadelBonusPlus.WebApi
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["AppJwtSettings:SecretKey"]))
                     };
                 });
-
-
         }
     }
 }

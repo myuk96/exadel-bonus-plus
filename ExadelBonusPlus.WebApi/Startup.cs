@@ -45,6 +45,8 @@ namespace ExadelBonusPlus.WebApi
                     options.Filters.Add(typeof(ValidationFilterAttribute));
                     options.Filters.Add(typeof(HttpModelResultFilterAttribute));
                     options.Filters.Add(typeof(LoggongFilterAttribute));
+
+                    options.Conventions.Add(new GroupingByVersionConvention());
                 })
                 .ConfigureApiBehaviorOptions(options =>
                 {
@@ -53,11 +55,24 @@ namespace ExadelBonusPlus.WebApi
                 })
                 .AddFluentValidation();
 
+            services.AddRouting(options => options.LowercaseUrls = true);
+            services.AddApiVersioning(options => {
+                options.DefaultApiVersion = new ApiVersion(1, 0);
+                options.AssumeDefaultVersionWhenUnspecified = true;
+                options.ReportApiVersions = true;
+                options.ApiVersionReader = new UrlSegmentApiVersionReader();
+            });
+
             services.AddSwaggerGen(c => {
                 c.SwaggerDoc("v1", new OpenApiInfo
                 {
-                    Version = "v1",
-                    Title = "exadel-bonus-plus API V1",
+                    Version = "1.0",
+                    Title = "exadel-bonus-plus API 1.0",
+                });
+                c.SwaggerDoc("v2", new OpenApiInfo
+                {
+                    Version = "2.0",
+                    Title = "exadel-bonus-plus API 2.0",
                 });
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
@@ -105,8 +120,8 @@ namespace ExadelBonusPlus.WebApi
 
             app.UseSwaggerUI(options =>
                 {
-                    options.SwaggerEndpoint("/swagger/v1/swagger.json", "Exadel Bonus Plus API v1");
-
+                    options.SwaggerEndpoint("/swagger/v1/swagger.json", "Exadel Bonus Plus API 1.0");
+                    options.SwaggerEndpoint("/swagger/v2/swagger.json", "Exadel Bonus Plus API 2.0");
                 }
             );
 
