@@ -48,7 +48,7 @@ namespace ExadelBonusPlus.WebApi.Controllers.v2
         
         [HttpPut]
         [Authorize(Roles = "Admin")]
-        [Route("user/{id}/addroles")]
+        [Route("user/{id}/roles/adding")]
         [SwaggerResponse((int)HttpStatusCode.OK, Description = "Add role to user", Type = typeof(ResultDto<UserInfoDTO>))]
         [SwaggerResponse((int)HttpStatusCode.InternalServerError)]
         public async Task<ActionResult<UserInfoDTO>> AddRoleToUserAsync([FromRoute] Guid id,  string roleName)
@@ -59,7 +59,7 @@ namespace ExadelBonusPlus.WebApi.Controllers.v2
 
         [HttpPut]
         [Authorize(Roles = "Admin")]
-        [Route("user/{id}/removeroles")]
+        [Route("user/{id}/roles/removing")]
         [SwaggerResponse((int)HttpStatusCode.OK, Description = "Remove role from user", Type = typeof(ResultDto<UserInfoDTO>))]
         [SwaggerResponse((int)HttpStatusCode.InternalServerError)]
         public async Task<ActionResult<UserInfoDTO>> RemoveUserRoleAsync([FromRoute] Guid id,  string roleName)

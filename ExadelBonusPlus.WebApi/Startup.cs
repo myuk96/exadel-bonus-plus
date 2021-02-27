@@ -9,7 +9,10 @@ using System.Threading.Tasks;
 using ExadelBonusPlus.Services.Models;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Versioning;
+using Microsoft.Extensions.Options;
+using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace ExadelBonusPlus.WebApi
 {
@@ -62,6 +65,12 @@ namespace ExadelBonusPlus.WebApi
                 options.ReportApiVersions = true;
                 options.ApiVersionReader = new UrlSegmentApiVersionReader();
             });
+
+            //services.AddVersionedApiExplorer(options =>  
+            //{  
+            //    options.GroupNameFormat = "'v'VVV";
+            //    options.SubstituteApiVersionInUrl = true;  
+            //}); 
 
             services.AddSwaggerGen(c => {
                 c.SwaggerDoc("v1", new OpenApiInfo
