@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -66,7 +67,16 @@ namespace ExadelBonusPlus.WebApi.Controllers
             var result = await _historyService.GetUserAllHistory(userId);
             return Ok(result);
         }
-
+        
+        [HttpGet]
+        [Route(("user/{userId:Guid}/withoutrepetitions"))]
+        [SwaggerResponse((int)HttpStatusCode.OK, Description = "get all user history", Type = typeof(ResultDto<List<UserHistoryDto>>))]
+        [SwaggerResponse((int)HttpStatusCode.InternalServerError)]
+        public async Task<ActionResult<HistoryDto>> GetUserHistoryWithoutBonusRepetition([FromRoute]Guid userId)
+        {
+            var result = await _historyService.GetUserAllHistoryWithousRepetiotins(userId);
+            return Ok(result);
+        }
         [HttpGet]
         [Route(("user/{userId:Guid}/date"))]
         [SwaggerResponse((int)HttpStatusCode.OK, Description = "get user history on period ", Type = typeof(ResultDto<List<UserHistoryDto>>))]
@@ -104,9 +114,5 @@ namespace ExadelBonusPlus.WebApi.Controllers
             var result = await _historyService.EstimateBonus(historyId, estimate, CancellationToken.None);
             return Ok(result);
         }
-
-
-
-
     }
 }
