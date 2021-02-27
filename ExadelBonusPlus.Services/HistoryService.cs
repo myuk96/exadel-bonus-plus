@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -90,6 +91,17 @@ namespace ExadelBonusPlus.Services
         {
             var history = await _historyRepository.GetUserHistory(userId, cancellationToken);
             return !(history is null) ? _mapper.Map<List<UserHistoryDto>>(history) : throw new ArgumentNullException("", Resources.FindError);
+        }
+
+        public async Task<IEnumerable<UserHistoryDto>> GetUserAllHistoryWithousRepetiotins(Guid userId, CancellationToken cancellationToken = default)
+        {
+            var history = await _historyRepository.GetUserHistory(userId, cancellationToken);
+
+            IEnumerable<History> noduplicates =
+                history.OrderByDescending(s=>s.CreatedDate).Distinct(new HistoryComparer());
+
+            return !(noduplicates is null) ? _mapper.Map<List<UserHistoryDto>>(noduplicates) : throw new ArgumentNullException("", Resources.FindError);
+
         }
 
         public async Task<IEnumerable<BonusHistoryDto>> GetBonusAllHistory(Guid bonusId, CancellationToken cancellationToken = default)

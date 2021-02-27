@@ -70,6 +70,15 @@ namespace ExadelBonusPlus.WebApi.Controllers.v2
             return Ok(result);
         }
         [HttpGet]
+        [Route(("user/{userId:Guid}/bonuses/usages/unique"))]
+        [SwaggerResponse((int)HttpStatusCode.OK, Description = "get all user history without repetitions of bonus", Type = typeof(ResultDto<List<UserHistoryDto>>))]
+        [SwaggerResponse((int)HttpStatusCode.InternalServerError)]
+        public async Task<ActionResult<HistoryDto>> GetUserHistoryWithoutBonusRepetition([FromRoute]Guid userId)
+        {
+            var result = await _historyService.GetUserAllHistoryWithousRepetiotins(userId);
+            return Ok(result);
+        }
+        [HttpGet]
         [Route(("bonuses/{bonusId:Guid}/usages"))]
         [SwaggerResponse((int)HttpStatusCode.OK, Description = "Get bonus history on period ", Type = typeof(ResultDto<List<BonusHistoryDto>>))]
         [SwaggerResponse((int)HttpStatusCode.InternalServerError)]
