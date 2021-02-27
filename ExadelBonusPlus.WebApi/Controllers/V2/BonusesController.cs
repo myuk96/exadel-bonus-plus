@@ -12,9 +12,8 @@ using Microsoft.AspNetCore.Authorization;
 namespace ExadelBonusPlus.WebApi.v2
 {
     [ApiController]
-    [ApiVersion("2.0")]
+    [ApiVersion("2")]
     [Route("api/v{version:apiVersion}/[controller]")]
-    [Authorize]
     public class BonusesController : ControllerBase
     {
         private readonly ILogger<BonusController> _logger;

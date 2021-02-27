@@ -66,11 +66,11 @@ namespace ExadelBonusPlus.WebApi
                 options.ApiVersionReader = new UrlSegmentApiVersionReader();
             });
 
-            //services.AddVersionedApiExplorer(options =>  
-            //{  
-            //    options.GroupNameFormat = "'v'VVV";
-            //    options.SubstituteApiVersionInUrl = true;  
-            //}); 
+            services.AddVersionedApiExplorer(options =>
+            {
+                options.GroupNameFormat = "'v'VVV";
+                options.SubstituteApiVersionInUrl = true;
+            });
 
             services.AddSwaggerGen(c => {
                 c.SwaggerDoc("v1", new OpenApiInfo
