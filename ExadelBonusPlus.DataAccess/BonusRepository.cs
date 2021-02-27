@@ -116,7 +116,7 @@ namespace ExadelBonusPlus.DataAccess
             var sortBy = Builders<Bonus>.Sort.Ascending(bonusFilter?.SortBy);
             if ((bonusFilter?.LastCount ?? 0) != 0)
             {
-                sortBy = Builders<Bonus>.Sort.Descending("CreatedDate");
+                sortBy = Builders<Bonus>.Sort.Descending(new ExpressionFieldDefinition<Bonus, DateTime>(x => x.CreatedDate));
             }
             
             return (filter, sortBy);
