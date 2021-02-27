@@ -69,8 +69,8 @@ namespace ExadelBonusPlus.WebApi.Controllers.v2
             return Ok(result);
         }
         [HttpGet]
-        [Route(("user/{userId:Guid}/bonus-usages-withoutrepetitions"))]
-        [SwaggerResponse((int)HttpStatusCode.OK, Description = "get all user history", Type = typeof(ResultDto<List<UserHistoryDto>>))]
+        [Route(("user/{userId:Guid}/bonus-usages-without-repetitions"))]
+        [SwaggerResponse((int)HttpStatusCode.OK, Description = "get all user history without repetitions of bonus", Type = typeof(ResultDto<List<UserHistoryDto>>))]
         [SwaggerResponse((int)HttpStatusCode.InternalServerError)]
         public async Task<ActionResult<HistoryDto>> GetUserHistoryWithoutBonusRepetition([FromRoute]Guid userId)
         {
