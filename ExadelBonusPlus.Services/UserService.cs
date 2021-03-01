@@ -169,7 +169,7 @@ namespace ExadelBonusPlus.Services
         {
             var tokens = await _tokenRefreshService.GetRefreshTokenByToken(refreshToken);
 
-            var token = tokens.Where(i=>i.CreatedByIp == ipAddress).FirstOrDefault(t => t.IsActive == true);
+            var token = tokens.FirstOrDefault(t => t.IsActive == true);
             if (!(token is null))
             {
                 var newRefreshToken = await _tokenRefreshService.UpdateRefreshToken(ipAddress, token);
@@ -192,10 +192,10 @@ namespace ExadelBonusPlus.Services
                 .WithAlgorithm(new HMACSHA512Algorithm())
                 .WithSecret(_appJwtSettings.SecretKey)
                 .AddClaim(JwtClaimTypes.Subject, user.Id)
-                .AddClaim(JwtClaimTypes.Expiration, DateTimeOffset.UtcNow.AddDays(_appJwtSettings.Expiration).ToUnixTimeSeconds())
+                .AddClaim(JwtClaimTypes.Expiration, DateTimeOffset.UtcNow.AddMinutes(_appJwtSettings.Expiration).ToUnixTimeSeconds())
                 .AddClaim(JwtClaimTypes.Email, user.Email)
                 .AddClaim(JwtClaimTypes.Audience, _appJwtSettings.Audience)
-                .AddClaim(ClaimName.IssuedAt, DateTimeOffset.UtcNow.AddDays(_appJwtSettings.Expiration).ToUnixTimeSeconds())
+                .AddClaim(ClaimName.IssuedAt, DateTimeOffset.UtcNow.AddMinutes(_appJwtSettings.Expiration).ToUnixTimeSeconds())
                 .AddClaim(JwtClaimTypes.Role, roles)
                 .Encode();
         }
