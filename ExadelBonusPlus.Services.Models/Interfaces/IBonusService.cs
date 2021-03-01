@@ -8,7 +8,7 @@ namespace ExadelBonusPlus.Services.Models
 {
     public interface IBonusService
     {
-        Task<BonusDto> AddBonusAsync(AddBonusDto model, CancellationToken cancellationToken = default);
+        Task<BonusDto> AddBonusAsync(AddBonusDto model, Guid userId, CancellationToken cancellationToken = default);
         Task<List<BonusDto>> FindAllBonusesAsync(CancellationToken cancellationToken = default);
         Task<List<BonusDto>> FindBonusesAsync(BonusFilter bonusFilter, CancellationToken cancellationToken = default);
         Task<BonusDto> FindBonusByIdAsync(Guid id, CancellationToken cancellationToken = default);

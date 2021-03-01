@@ -11,12 +11,24 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 
 namespace ExadelBonusPlus.WebApi
 {
     public static class IServiceCollectionExtensions
     {
+        public static void AddLogging(this IServiceCollection services)
+        {
+            var loggerFactory = LoggerFactory.Create(builder =>
+            {
+                builder.AddConsole();
+                builder.AddDebug();
+            });
+            ILogger logger = loggerFactory.CreateLogger<Startup>();
+            services.AddSingleton<ILogger>(logger);
+        }
+
         public static void AddBonusTransient(this IServiceCollection services)
         {
             services.AddTransient<IBonusRepository, BonusRepository>();
@@ -24,9 +36,7 @@ namespace ExadelBonusPlus.WebApi
 
             services.AddTransient<IValidator<AddBonusDto>, AddBonusDtoValidator>();
             services.AddTransient<IValidator<UpdateBonusDto>, UpdateBonusDtoValidator>();
-
-
-
+            services.AddTransient<IValidator<BonusFilter>, BonusFilterValidator>();
         }
 
         public static void AddHistoryTransient(this IServiceCollection services, IConfiguration configuration)

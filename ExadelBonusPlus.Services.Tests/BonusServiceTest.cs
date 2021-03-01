@@ -42,7 +42,7 @@ namespace ExadelBonusPlus.Services.Tests
             CreateDefaultBonusServiceInstance();
             var bonusDto = _mapper.Map<AddBonusDto>(_fakeBonuseDtos[0]);
 
-            var bonus = await _bonusService.AddBonusAsync(bonusDto, default(CancellationToken));
+            var bonus = await _bonusService.AddBonusAsync(bonusDto, Guid.Empty, default(CancellationToken));
 
             Assert.NotNull(bonus);
         }

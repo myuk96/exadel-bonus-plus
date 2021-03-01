@@ -18,60 +18,9 @@ namespace ExadelBonusPlus.DataAccess
         }
         public async Task<IEnumerable<Bonus>> GetBonusesAsync(BonusFilter bonusFilter, CancellationToken cancellationToken)
         {
-            FilterDefinition<Bonus> filter =
-                Builders<Bonus>.Filter.Eq(new ExpressionFieldDefinition<Bonus, bool>(x => x.IsDeleted), false);
-            List<SortDefinition<Bonus>> sortBy = new List<SortDefinition<Bonus>>();
+            var (filter, sortingField) = GetBonusFilterCombined(bonusFilter);
 
-            if(bonusFilter?.IsActive != null)
-            {
-                filter &= Builders<Bonus>.Filter.Eq(new ExpressionFieldDefinition<Bonus, bool>(x => x.IsActive),
-                    (bool)bonusFilter?.IsActive);
-            }
-
-            if (!String.IsNullOrEmpty(bonusFilter?.Title))
-            {
-                filter &= Builders<Bonus>.Filter.Regex(new ExpressionFieldDefinition<Bonus, string>(x => x.Title), new BsonRegularExpression(bonusFilter?.Title));
-            }
-
-            if (!String.IsNullOrEmpty(bonusFilter?.Type))
-            {
-                filter &= Builders<Bonus>.Filter.Eq(x => x.Type, bonusFilter.Type);
-            }
-
-            if (!String.IsNullOrEmpty(bonusFilter?.City))
-            {
-                filter &= Builders<Bonus>.Filter.ElemMatch(x => x.Locations, y => y.City == bonusFilter.City);
-            }
-
-            if (bonusFilter?.CompanyId != null & bonusFilter?.CompanyId != Guid.Empty)
-            {
-                filter &= Builders<Bonus>.Filter.Eq(x => x.CompanyId, bonusFilter.CompanyId);
-            }
-
-            if (bonusFilter?.Tags != null && bonusFilter?.Tags.Count > 0)
-            {
-                filter &= Builders<Bonus>.Filter.AnyIn(b => b.Tags, bonusFilter?.Tags);
-            }
-
-            if (bonusFilter?.DateStart != null && bonusFilter?.DateStart != DateTime.MinValue)
-            {
-                filter &= Builders<Bonus>.Filter.Gte(x => x.DateStart, bonusFilter?.DateStart) |
-                      Builders<Bonus>.Filter.Gte(x => x.DateEnd, bonusFilter?.DateStart);
-            }
-
-            if (bonusFilter?.DateEnd != null && bonusFilter?.DateEnd != DateTime.MinValue)
-            {
-                filter &= Builders<Bonus>.Filter.Lte(x => x.DateStart, bonusFilter?.DateEnd) |
-                         Builders<Bonus>.Filter.Lte(x => x.DateEnd, bonusFilter?.DateEnd);
-            }
-
-            if ((bonusFilter?.LastCount ?? 0) != 0)
-            {
-                sortBy.Add(Builders<Bonus>.Sort.Descending("CreatedDate"));
-            }
-            sortBy.Add(Builders<Bonus>.Sort.Ascending(bonusFilter?.SortBy ?? "Title"));
-
-            return await GetCollection().Find(filter).Sort(Builders<Bonus>.Sort.Combine(sortBy)).Limit(bonusFilter?.LastCount ?? 0).ToListAsync(cancellationToken);
+            return await GetCollection().Find(filter).Sort(sortingField).Limit(bonusFilter?.LastCount ?? 0).ToListAsync(cancellationToken);
         }
 
         public Task<Bonus> ActivateBonusAsync(Guid id,  CancellationToken cancellationToken)
@@ -111,9 +60,15 @@ namespace ExadelBonusPlus.DataAccess
 
         public async Task<IEnumerable<Bonus>> GetBonusStatisticAsync(BonusFilter bonusFilter, CancellationToken cancellationToken)
         {
+            var (filter, sortingField) = GetBonusFilterCombined(bonusFilter);
+
+            return await GetCollection().Find(filter).Sort(sortingField).Limit(bonusFilter?.LastCount ?? 0).ToListAsync(cancellationToken);
+        }
+
+        private (FilterDefinition<Bonus>, SortDefinition<Bonus>) GetBonusFilterCombined(BonusFilter bonusFilter)
+        {
             FilterDefinition<Bonus> filter =
                 Builders<Bonus>.Filter.Eq(new ExpressionFieldDefinition<Bonus, bool>(x => x.IsDeleted), false);
-            List<SortDefinition<Bonus>> sortBy = new List<SortDefinition<Bonus>>();
 
             if (bonusFilter?.IsActive != null)
             {
@@ -131,14 +86,14 @@ namespace ExadelBonusPlus.DataAccess
                 filter &= Builders<Bonus>.Filter.Eq(x => x.Type, bonusFilter.Type);
             }
 
-            if (bonusFilter?.CompanyId != null & bonusFilter?.CompanyId != Guid.Empty)
-            {
-                filter &= Builders<Bonus>.Filter.Eq(x => x.CompanyId, bonusFilter.CompanyId);
-            }
-
             if (!String.IsNullOrEmpty(bonusFilter?.City))
             {
                 filter &= Builders<Bonus>.Filter.ElemMatch(x => x.Locations, y => y.City == bonusFilter.City);
+            }
+
+            if (bonusFilter?.CompanyId != null & bonusFilter?.CompanyId != Guid.Empty)
+            {
+                filter &= Builders<Bonus>.Filter.Eq(x => x.CompanyId, bonusFilter.CompanyId);
             }
 
             if (bonusFilter?.Tags != null && bonusFilter?.Tags.Count > 0)
@@ -158,13 +113,13 @@ namespace ExadelBonusPlus.DataAccess
                          Builders<Bonus>.Filter.Lte(x => x.DateEnd, bonusFilter?.DateEnd);
             }
 
+            var sortBy = Builders<Bonus>.Sort.Ascending(bonusFilter?.SortBy);
             if ((bonusFilter?.LastCount ?? 0) != 0)
             {
-                sortBy.Add(Builders<Bonus>.Sort.Descending("CreatedDate"));
+                sortBy = Builders<Bonus>.Sort.Descending(new ExpressionFieldDefinition<Bonus, DateTime>(x => x.CreatedDate));
             }
-            sortBy.Add(Builders<Bonus>.Sort.Ascending(bonusFilter?.SortBy ?? "Title"));
-
-            return await GetCollection().Find(filter).Sort(Builders<Bonus>.Sort.Combine(sortBy)).Limit(bonusFilter?.LastCount ?? 0).ToListAsync(cancellationToken);
+            
+            return (filter, sortBy);
         }
     }
 }

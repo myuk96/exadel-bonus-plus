@@ -31,4 +31,13 @@ namespace ExadelBonusPlus.Services.Models
             RuleFor(x => x.CompanyId).NotNull().NotEmpty();
         }
     }
+
+    public class BonusFilterValidator : AbstractValidator<BonusFilter>
+    {
+        public BonusFilterValidator()
+        {
+            RuleFor(x => x).NotNull();
+            RuleFor(x => x.SortBy).NotEmpty().WithMessage("Please, fill 'SortBy' parameter");
+        }
+    }
 }
