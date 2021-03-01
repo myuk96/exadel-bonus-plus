@@ -3,9 +3,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using ExadelBonusPlus.Services.Models;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Net;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 
@@ -14,6 +16,7 @@ namespace ExadelBonusPlus.WebApi.v2
     [ApiController]
     [ApiVersion("2")]
     [Route("api/v{version:apiVersion}/[controller]")]
+    [Authorize]
     public class BonusesController : ControllerBase
     {
         private readonly ILogger<BonusController> _logger;
@@ -31,7 +34,8 @@ namespace ExadelBonusPlus.WebApi.v2
         [SwaggerResponse((int)HttpStatusCode.InternalServerError)]
         public async Task<ActionResult<ResultDto<BonusDto>>> AddBonusAsync([FromBody] AddBonusDto Bonus)
         {
-            return Ok(await _BonusService.AddBonusAsync(Bonus));
+            var userId = User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
+            return Ok(await _BonusService.AddBonusAsync(Bonus, Guid.Parse(userId)));
         }
 
         [HttpGet]

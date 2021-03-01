@@ -25,7 +25,7 @@ namespace ExadelBonusPlus.Services
             _historyRepository = historyRepository;
         }
 
-        public async Task<BonusDto> AddBonusAsync(AddBonusDto model, CancellationToken cancellationToken = default)
+        public async Task<BonusDto> AddBonusAsync(AddBonusDto model, Guid userId, CancellationToken cancellationToken = default)
         {
             if (model is null)
             {
@@ -44,6 +44,7 @@ namespace ExadelBonusPlus.Services
 
             var bonus = _mapper.Map<Bonus>(model);
             bonus.SetInitialValues();
+            bonus.CreatorId = userId;
             
             await _bonusRepository.AddAsync(bonus, cancellationToken);
             return _mapper.Map<BonusDto>(bonus);
