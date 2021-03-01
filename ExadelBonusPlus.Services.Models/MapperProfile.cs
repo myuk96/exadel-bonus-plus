@@ -64,6 +64,7 @@ namespace ExadelBonusPlus.Services.Models
                 .ReverseMap();
             CreateMap<History, UserHistoryDto>()
                 .ForMember(d => d.UsageDate, opt => opt.MapFrom(src=>src.CreatedDate))
+                .ForMember(d => d.HistoryId, opt => opt.MapFrom(src=>src.Id))
                 .ForMember(dest => dest.BonusDto, opt =>
                     opt.MapFrom<BonusResolver>())
                 .ReverseMap();
