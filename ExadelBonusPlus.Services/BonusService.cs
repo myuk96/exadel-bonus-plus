@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,12 +15,14 @@ namespace ExadelBonusPlus.Services
     {
         private readonly IBonusRepository _bonusRepository;
         private readonly IVendorService _vendorService;
+        private readonly IHistoryRepository _historyRepository;
         private readonly IMapper _mapper;
-        public BonusService(IBonusRepository bonusRepository, IMapper mapper, IVendorService vendorService)
+        public BonusService(IBonusRepository bonusRepository, IMapper mapper, IVendorService vendorService, IHistoryRepository historyRepository)
         {
             _bonusRepository = bonusRepository;
             _mapper = mapper;
             _vendorService = vendorService;
+            _historyRepository = historyRepository;
         }
 
         public async Task<BonusDto> AddBonusAsync(AddBonusDto model, CancellationToken cancellationToken = default)
@@ -96,6 +99,14 @@ namespace ExadelBonusPlus.Services
                 throw new ArgumentNullException("", Resources.IdentifierIsNull);
             }
 
+            
+            var histories= await _historyRepository.GetBonusHistoryByUsageDate(id, DateTime.MinValue, DateTime.MaxValue,
+                    cancellationToken);
+            if(histories.Any())
+            {
+                throw new ArgumentException(Resources.UnableToRemoveBonus);
+            }
+            
             var result =await _bonusRepository.RemoveAsync(id, cancellationToken);
 
             return _mapper.Map<BonusDto>(result);

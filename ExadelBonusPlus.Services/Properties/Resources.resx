@@ -141,6 +141,9 @@
   <data name="PropertyDoesNotExist" xml:space="preserve">
     <value>Property of sorting does not exist</value>
   </data>
+  <data name="UnableToRemoveBonus" xml:space="preserve">
+    <value>Unable to remove bonus: there are some entries in bonus history collection</value>
+  </data>
   <data name="UserInRole" xml:space="preserve">
     <value>Current user in chosen role</value>
   </data>
