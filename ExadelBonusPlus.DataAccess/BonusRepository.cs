@@ -40,7 +40,7 @@ namespace ExadelBonusPlus.DataAccess
 
             if (!String.IsNullOrEmpty(bonusFilter?.City))
             {
-                filter &= Builders<Bonus>.Filter.ElemMatch(x => x.Locations, y => y.City == bonusFilter.City);
+                filter &= Builders<Bonus>.Filter.ElemMatch(x => x.Locations, y => y.City.ToLower() == bonusFilter.City.ToLower());
             }
 
             if (bonusFilter?.CompanyId != null & bonusFilter?.CompanyId != Guid.Empty)
@@ -138,7 +138,7 @@ namespace ExadelBonusPlus.DataAccess
 
             if (!String.IsNullOrEmpty(bonusFilter?.City))
             {
-                filter &= Builders<Bonus>.Filter.ElemMatch(x => x.Locations, y => y.City == bonusFilter.City);
+                filter &= Builders<Bonus>.Filter.ElemMatch(x => x.Locations, y => y.City.ToLower() == bonusFilter.City.ToLower());
             }
 
             if (bonusFilter?.Tags != null && bonusFilter?.Tags.Count > 0)
