@@ -69,7 +69,15 @@ namespace ExadelBonusPlus.DataAccess
             {
                 sortBy.Add(Builders<Bonus>.Sort.Descending("CreatedDate"));
             }
-            sortBy.Add(Builders<Bonus>.Sort.Ascending(bonusFilter?.SortBy ?? "Title"));
+
+            if (bonusFilter?.SortBy == "Rating")
+            {
+                sortBy.Add(Builders<Bonus>.Sort.Descending(bonusFilter?.SortBy));
+            }
+            else
+            {
+                sortBy.Add(Builders<Bonus>.Sort.Ascending(bonusFilter?.SortBy ?? "Title"));
+            }
 
             return await GetCollection().Find(filter).Sort(Builders<Bonus>.Sort.Combine(sortBy)).Limit(bonusFilter?.LastCount ?? 0).ToListAsync(cancellationToken);
         }
@@ -162,7 +170,15 @@ namespace ExadelBonusPlus.DataAccess
             {
                 sortBy.Add(Builders<Bonus>.Sort.Descending("CreatedDate"));
             }
-            sortBy.Add(Builders<Bonus>.Sort.Ascending(bonusFilter?.SortBy ?? "Title"));
+
+            if (bonusFilter?.SortBy == "Rating")
+            {
+                sortBy.Add(Builders<Bonus>.Sort.Descending(bonusFilter?.SortBy));
+            }
+            else
+            {
+                sortBy.Add(Builders<Bonus>.Sort.Ascending(bonusFilter?.SortBy ?? "Title"));
+            }
 
             return await GetCollection().Find(filter).Sort(Builders<Bonus>.Sort.Combine(sortBy)).Limit(bonusFilter?.LastCount ?? 0).ToListAsync(cancellationToken);
         }
