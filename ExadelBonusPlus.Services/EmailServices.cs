@@ -40,8 +40,13 @@ namespace ExadelBonusPlus.Services
                 await _vendorService.GetVendorByIdAsync(bonus.Company.Id);
 
             string promoCode = vendor.Name + RandomString(5);
-            var strToUser = String.Format("Hi {0} {1} your order recived. Your promo code is {2}",
-                user.FirstName, user.LastName, promoCode);
+            var strToUser = String.Format("Hi {0} {1} your order recived. You ordered {2} by {3} company." +
+                                          " For more information, please call {4} or email {5}." +
+                                          " Validity period from {6} to {7}." +
+                                          " Your promo code is {8}",
+                user.FirstName, user.LastName, 
+                bonus.Title, bonus.Company.Name, bonus.Phone, vendor.Email, bonus.DateStart, bonus.DateEnd,
+                promoCode);
             var strToVendor = String.Format("Dear {0},  {1} {2} will come to you with promo. PromoCode is {3}",
                 vendor.Name, user.FirstName, user.LastName, promoCode);
 

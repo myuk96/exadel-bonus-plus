@@ -137,8 +137,13 @@ namespace ExadelBonusPlus.Services
             }
             else
             {
-                int countEst = await _historyRepository.GetCountHistoryByBonusIdAsync(bonus.Id, cancellationToken);
-                avg = (bonus.Rating + estimate) / (countEst + 1);
+                var estimatedHistory = await _historyRepository.GetEstmatatedHistoryByBonusIdAsync(bonus.Id, cancellationToken);
+                int sumEstimated = 0;
+                foreach (var h in estimatedHistory)
+                {
+                    sumEstimated += h.Rating;
+                }
+                avg = (double)(sumEstimated + estimate) / (double)(estimatedHistory.Count() + 1);
             }
 
             await _bonusRepository.UpdateBonusRatingAsync(bonus.Id, avg, cancellationToken);

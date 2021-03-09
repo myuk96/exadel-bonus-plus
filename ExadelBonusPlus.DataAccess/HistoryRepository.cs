@@ -48,5 +48,15 @@ namespace ExadelBonusPlus.DataAccess
             var result = await GetCollection().Find(filterUser).ToListAsync(cancellationToken);
             return result.Count();
         }
+
+        public async Task<IEnumerable<History>> GetEstmatatedHistoryByBonusIdAsync(Guid bonusId,
+            CancellationToken cancellationToken = default)
+        {
+            var filterUser = Builders<History>.Filter.Eq(x => x.BonusId, bonusId)
+                             & Builders<History>.Filter.Gt(x => x.Rating, 0);
+            var result = await GetCollection().Find(filterUser).ToListAsync(cancellationToken);
+            return result;
+        }
+
     }
 }
